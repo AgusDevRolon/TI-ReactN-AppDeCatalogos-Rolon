@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, StatusBar } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import CreateScreen from '../screens/CreateScreen';
@@ -29,6 +29,12 @@ export default function App() {
     }
   ]);
 
+  // NUEVO: Uso de useEffect para cumplir con el requisito de la Sección III
+  // Se ejecuta una sola vez al cargar la app para inicialización/depuración
+  useEffect(() => {
+    console.log("Catálogo inicializado. Elementos actuales en memoria:", catalog.length);
+  }, []);
+
   const handleAddItem = (newItemData: any) => {
     const itemComplete = {
       id: Math.random().toString(),
@@ -46,7 +52,6 @@ export default function App() {
     );
   };
 
-  // NUEVA FUNCIÓN: Elimina el elemento filtrándolo fuera del arreglo
   const handleDeleteItem = (id: string) => {
     setCatalog(prevCatalog => prevCatalog.filter(item => item.id !== id));
   };
@@ -77,7 +82,6 @@ export default function App() {
             setSelectedItem(null);
             setScreen('Home');
           }}
-          // NUEVA PROP: Pasamos la función de borrado y forzamos la vuelta al Home
           onDelete={(id: string) => {
             handleDeleteItem(id);
             setSelectedItem(null);

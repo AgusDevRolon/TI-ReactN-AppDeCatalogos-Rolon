@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } fr
 
 export default function DetailScreen({ item, onNavigateBack, onDelete }) {
   
-  // Función para mostrar la alerta nativa de confirmación
   const confirmDelete = () => {
     Alert.alert(
       "Eliminar elemento",
@@ -23,6 +22,8 @@ export default function DetailScreen({ item, onNavigateBack, onDelete }) {
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.category}>{item.category.toUpperCase()}</Text>
         
+        <Text style={styles.rating}>{'⭐'.repeat(item.rating || 5)}</Text>
+        
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sinopsis / Descripción</Text>
           <Text style={styles.text}>{item.description || 'Sin descripción disponible.'}</Text>
@@ -37,7 +38,6 @@ export default function DetailScreen({ item, onNavigateBack, onDelete }) {
           <Text style={styles.backButtonText}>Volver al Catálogo</Text>
         </TouchableOpacity>
 
-        {/* NUEVO BOTÓN DE ELIMINAR */}
         <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
           <Text style={styles.deleteButtonText}>🗑️ Eliminar del Catálogo</Text>
         </TouchableOpacity>
@@ -74,7 +74,12 @@ const styles = StyleSheet.create({
     color: '#e50914',
     fontWeight: 'bold',
     letterSpacing: 1,
+    marginBottom: 10,
+  },
+  rating: {
+    fontSize: 18,
     marginBottom: 20,
+    letterSpacing: 2,
   },
   section: {
     marginBottom: 20,
@@ -101,14 +106,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 15, // Reduje el margen para dar espacio al otro botón
+    marginBottom: 15,
   },
   backButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  // ESTILOS DEL NUEVO BOTÓN
   deleteButton: {
     backgroundColor: 'transparent',
     padding: 15,

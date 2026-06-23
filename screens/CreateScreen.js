@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView 
 
 export default function CreateScreen({ onAddItem, onNavigateBack }) {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Película'); // Lo cambié a Película por defecto para probar TMDB más rápido
+  const [category, setCategory] = useState('Película');
   const [description, setDescription] = useState('');
   const [review, setReview] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState(5); 
 
-  // FUNCIÓN ASÍNCRONA REAL CONECTADA A INTERNET
   const handleAutoFetch = async () => {
     if (!title.trim()) {
       Alert.alert('Atención', 'Por favor, introduce el nombre de la obra primero.');
@@ -19,39 +19,37 @@ export default function CreateScreen({ onAddItem, onNavigateBack }) {
     setIsLoading(true);
 
     try {
-      // Si es un videojuego, por ahora usamos un mock hasta conectar la API de RAWG
       if (category === 'Videojuego') {
-        setTimeout(() => {
-          setDescription(`Sinopsis/Descripción automática simulada para el videojuego: ${title}.`);
-          setImageUrl('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400');
-          setIsLoading(false);
-          Alert.alert('Aviso', 'Se usaron datos simulados. (Falta conectar API de Videojuegos).');
-        }, 1000);
-        return;
+        const gameUrl = `https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(title)}`;
+        const gameResponse = await fetch(gameUrl);
+        const gameData = await gameResponse.json();
+
+        if (gameData && gameData.length > 0) {
+          const firstGame = gameData[0];
+          setDescription(`Juego encontrado en la base de datos de CheapShark. (Nombre original: ${firstGame.external})`);
+          setImageUrl(firstGame.thumb || 'https://via.placeholder.com/400x600?text=Sin+Portada');
+          Alert.alert('¡Éxito!', 'Juego encontrado y autocompletado desde CheapShark.');
+        } else {
+          Alert.alert('Sin resultados', 'No se encontró ningún videojuego con ese nombre.');
+        }
+        setIsLoading(false);
+        return; 
       }
 
-      // === LÓGICA REAL PARA PELÍCULAS Y SERIES CON TMDB ===
       const API_KEY = '4073df069aaf4849f2938aa6c03e2771';
-      // search/multi busca tanto en películas como en programas de TV
       const url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&api_key=${API_KEY}&language=es-ES`;
 
       const response = await fetch(url);
       const data = await response.json();
 
       if (data.results && data.results.length > 0) {
-        // Tomamos el primer resultado que coincide con la búsqueda
         const firstResult = data.results[0];
-        
-        // TMDB devuelve las descripciones en 'overview'
         const overview = firstResult.overview || 'No hay sinopsis disponible en español para esta obra.';
-        
-        // TMDB devuelve una ruta relativa de imagen, hay que armar la URL completa
         const posterPath = firstResult.poster_path;
         const fullImageUrl = posterPath 
           ? `https://image.tmdb.org/t/p/w500${posterPath}` 
           : 'https://via.placeholder.com/400x600?text=Sin+Portada';
 
-        // Actualizamos los estados con los datos reales
         setDescription(overview);
         setImageUrl(fullImageUrl);
         
@@ -62,9 +60,9 @@ export default function CreateScreen({ onAddItem, onNavigateBack }) {
 
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Hubo un problema al intentar conectar con el servidor de TMDB.');
+      Alert.alert('Error', 'Hubo un problema al intentar conectar con los servidores.');
     } finally {
-      setIsLoading(false); // Apagamos el indicador de carga pase lo que pase
+      setIsLoading(false); 
     }
   };
 
@@ -79,6 +77,7 @@ export default function CreateScreen({ onAddItem, onNavigateBack }) {
       category,
       description,
       review,
+      rating, 
       imageUrl: imageUrl || 'https://via.placeholder.com/150',
     });
 
@@ -106,7 +105,7 @@ export default function CreateScreen({ onAddItem, onNavigateBack }) {
       <Text style={styles.label}>Nombre de la Obra</Text>
       <TextInput 
         style={styles.input} 
-        placeholder="Ej: Interstellar, Breaking Bad..." 
+        placeholder="Ej: Interstellar, Breaking Bad, The Witcher..." 
         placeholderTextColor="#666"
         value={title}
         onChangeText={setTitle}
@@ -127,6 +126,19 @@ export default function CreateScreen({ onAddItem, onNavigateBack }) {
         placeholderTextColor="#444"
         value={description}
       />
+
+      <Text style={styles.label}>Calificación</Text>
+      <View style={styles.pickerContainer}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity 
+            key={star} 
+            style={[styles.pickerButton, rating === star && styles.pickerActive]}
+            onPress={() => setRating(star)}
+          >
+            <Text style={styles.pickerText}>{star} ⭐</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <Text style={styles.label}>Tu Reseña Personal</Text>
       <TextInput 

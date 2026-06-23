@@ -15,7 +15,6 @@ export default function HomeScreen({ catalog, onToggleFavorite, onNavigateToCrea
     <View style={styles.container}>
       <Text style={styles.headerTitle}>NETCATÁLOGO</Text>
 
-      {/* SECCIÓN 1: ÚLTIMOS AÑADIDOS (CARRUSEL HORIZONTAL) */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Últimos Añadidos</Text>
         {lastFiveItems.length === 0 ? (
@@ -24,8 +23,8 @@ export default function HomeScreen({ catalog, onToggleFavorite, onNavigateToCrea
           <FlatList 
             data={lastFiveItems}
             keyExtractor={(item) => `recent-${item.id}`}
-            horizontal={true} // <-- CLAVE: Habilita el desplazamiento horizontal tipo Netflix
-            showsHorizontalScrollIndicator={false} // Oculta la barra de scroll molesta
+            horizontal={true} 
+            showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <MediaCard item={item} onToggleFavorite={onToggleFavorite} onViewDetail={onViewDetail} horizontal={true} />
             )}
@@ -33,7 +32,7 @@ export default function HomeScreen({ catalog, onToggleFavorite, onNavigateToCrea
         )}
       </View>
 
-      {/* SECCIÓN 2: FAVORITOS (LISTA VERTICAL OPTIMIZADA) */}
+      
       <View style={[styles.sectionContainer, { flex: 1 }]}>
         <Text style={styles.sectionTitle}>Mis Favoritos ❤️</Text>
         {favoriteItems.length === 0 ? (
@@ -49,7 +48,6 @@ export default function HomeScreen({ catalog, onToggleFavorite, onNavigateToCrea
         )}
       </View>
 
-      {/* BOTÓN FLOTANTE "+" PARA CREAR */}
       <TouchableOpacity style={styles.floatingButton} onPress={onNavigateToCreate}>
         <Text style={styles.floatingButtonText}>+ Crear</Text>
       </TouchableOpacity>
@@ -60,11 +58,11 @@ export default function HomeScreen({ catalog, onToggleFavorite, onNavigateToCrea
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Fondo general oscuro
+    backgroundColor: '#121212', 
     paddingTop: 40,
   },
   headerTitle: {
-    color: '#e50914', // Rojo institucional de streaming
+    color: '#e50914', 
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
